@@ -38,7 +38,7 @@ module Bizarro
 
     def error_message
       <<-eos
-        Failure when comparing #{@screenshot_filename} to the reference screenshot located
+        Failure when comparing #{@selector} to the reference screenshot located
         at #{reference_path(@screenshot_filename)}.
 
         The tested screenshot can be found at #{comparison_path(@screenshot_filename)}.
