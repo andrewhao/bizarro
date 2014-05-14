@@ -2,6 +2,8 @@ require 'chunky_png'
 
 module Bizarro
   class Differ
+    include Bizarro::FileHelpers
+
     ALLOWED_DIFFERENCE = 0
 
     def initialize(reference_path, current_path)
@@ -17,7 +19,7 @@ module Bizarro
       if difference_allowed?(difference)
         true
       else
-        @images.last.save(diff_path)
+        @images.last.save(diff_path(@reference_path))
         false
       end
     end
@@ -39,11 +41,6 @@ module Bizarro
           end
         end
       end
-    end
-
-    def diff_path
-      filename = File.basename(@reference_path, '.png')
-      "spec/screenshots/diffs/#{filename}-diff.png"
     end
   end
 end

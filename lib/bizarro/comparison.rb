@@ -1,5 +1,7 @@
 module Bizarro
   class Comparison
+    include Bizarro::FileHelpers
+
     attr_reader :selector
 
     def initialize(selector)
@@ -25,15 +27,17 @@ module Bizarro
       end
     end
 
+    def error_message
+      <<-eos
+        Failure when comparing #{@selector} to the reference screenshot located
+        at #{saved_path(@selector)}.
+
+        The tested screenshot can be found at #{comparison_path(@selector)}.
+        A diff screenshot can be found at #{diff_path(@selector)}.
+      eos
+    end
+
     private
-
-    def saved_path(filename)
-      "spec/screenshots/saved/#{filename}.png"
-    end
-
-    def comparison_path(filename)
-      "spec/screenshots/comparison/#{filename}-live.png"
-    end
 
     def filename_safe(selector)
       safe_selector = selector.gsub(/^.*(\\|\/)/, '')

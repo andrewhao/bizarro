@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Bizarro::Comparison do
   let(:selector) { '#my-css-selector' }
+  let(:safe_selector) { 'my-css-selector' }
+
   let(:instance) { described_class.new(selector) }
 
   before { File.stub(:delete) }
@@ -15,8 +17,6 @@ describe Bizarro::Comparison do
   end
 
   describe '#run' do
-    let(:safe_selector) { 'my-css-selector' }
-
     subject { instance.run }
 
     context 'given a reference screenshot' do
@@ -78,6 +78,26 @@ describe Bizarro::Comparison do
     end
 
     context 'without a reference screenshot' do
+    end
+  end
+
+  describe '#error_message' do
+    subject { instance.error_message }
+
+    it 'includes the selector used' do
+      expect(subject).to include(selector)
+    end
+
+    it 'includes the reference screenshot location' do
+      expect(subject).to match(/#{safe_selector}.png/)
+    end
+
+    it 'includes the comparison screenshot location' do
+      expect(subject).to match(/#{safe_selector}-live.png/)
+    end
+
+    it 'includes the diff screenshot location' do
+      expect(subject).to match(/#{safe_selector}-diff.png/)
     end
   end
 end
