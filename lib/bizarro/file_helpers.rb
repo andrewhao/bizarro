@@ -2,27 +2,35 @@ module Bizarro
   module FileHelpers
     extend self
 
-    REFERENCE_FOLDER = 'spec/screenshots/reference'
-    COMPARISON_FOLDER = 'spec/screenshots/comparison'
-    DIFF_FOLDER = 'spec/screenshots/diffs'
+    def reference_directory
+      "#{Bizarro.configuration.screenshot_directory}/reference"
+    end
+
+    def comparison_directory
+      "#{Bizarro.configuration.screenshot_directory}/comparison"
+    end
+
+    def diff_directory
+      "#{Bizarro.configuration.screenshot_directory}/diffs"
+    end
 
     def create_file_paths
-      [REFERENCE_FOLDER, COMPARISON_FOLDER, DIFF_FOLDER].each do |folder|
-        FileUtils.mkpath(folder) unless File.exists?(folder)
+      [reference_directory, comparison_directory, diff_directory].each do |directory|
+        FileUtils.mkpath(directory) unless File.exists?(directory)
       end
     end
 
     def reference_path(filename)
-      "#{REFERENCE_FOLDER}/#{filename}.png"
+      "#{reference_directory}/#{filename}.png"
     end
 
     def comparison_path(filename)
-      "#{COMPARISON_FOLDER}/#{filename}-live.png"
+      "#{comparison_directory}/#{filename}-live.png"
     end
 
     def diff_path(filename)
       base_filename = File.basename(filename, '.png')
-      "#{DIFF_FOLDER}/#{base_filename}-diff.png"
+      "#{diff_directory}/#{base_filename}-diff.png"
     end
   end
 end
