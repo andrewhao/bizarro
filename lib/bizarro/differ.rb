@@ -8,10 +8,11 @@ module Bizarro
 
     def initialize(reference_path, current_path)
       @reference_path = reference_path
-      @images = [
-        ChunkyPNG::Image.from_file(reference_path),
-        ChunkyPNG::Image.from_file(current_path),
-      ]
+      @images = {
+        reference: ChunkyPNG::Image.from_file(reference_path),
+        current: ChunkyPNG::Image.from_file(current_path),
+        diff: ChunkyPNG::Image.from_file(reference_path)
+      }
     end
 
     def identical?
@@ -19,7 +20,7 @@ module Bizarro
       if difference_allowed?(difference)
         true
       else
-        @images.last.save(diff_path(@reference_path))
+        @images[:diff].save(diff_path(@reference_path))
         false
       end
     end
@@ -32,11 +33,15 @@ module Bizarro
 
     def create_difference
       [].tap do |diff|
-        @images.first.height.times do |y|
-          @images.first.row(y).each_with_index do |pixel, x|
-            unless pixel == @images.last[x,y]
-              diff << [x,y]
-              @images.last[x,y] = ChunkyPNG::Color.rgb(255,0,0)
+        @images[:reference].height.times do |y|
+          @images[:reference].row(y).each_with_index do |pixel, x|
+            begin
+              unless pixel == @images[:current][x,y]
+                diff << [x,y]
+                @images[:diff][x,y] = ChunkyPNG::Color.rgb(255,0,0)
+              end
+            rescue ChunkyPNG::OutOfBounds
+              @images[:diff][x,y] = ChunkyPNG::Color.rgb(255,0,0)
             end
           end
         end

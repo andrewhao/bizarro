@@ -13,13 +13,17 @@ describe Bizarro::Differ do
     it 'creates ChunkyPNG images' do
       subject
 
-      expect(ChunkyPNG::Image).to have_received(:from_file).with(reference_path)
+      expect(ChunkyPNG::Image).to have_received(:from_file).with(reference_path).twice
       expect(ChunkyPNG::Image).to have_received(:from_file).with(current_path)
     end
   end
 
   describe '#identical' do
-    let(:reference_image) { ChunkyPNG::Image.new(5,5, ChunkyPNG::Color.rgb(1,1,1)) }
+    let(:reference_image) do
+     image = ChunkyPNG::Image.new(5,5, ChunkyPNG::Color.rgb(1,1,1))
+     image.stub(:save)
+     image
+    end
 
     subject { instance.identical? }
 
@@ -38,7 +42,6 @@ describe Bizarro::Differ do
       let(:current_image) do
         image = ChunkyPNG::Image.from_canvas(reference_image)
         image[1,1] = ChunkyPNG::Color.rgb(2,2,2)
-        image.stub(:save)
         image
       end
 
@@ -48,7 +51,7 @@ describe Bizarro::Differ do
 
       it 'saves the diff' do
         subject
-        expect(current_image).to have_received(:save).with(/reference-diff.png/)
+        expect(reference_image).to have_received(:save).with(/reference-diff.png/)
       end
     end
   end
