@@ -2,8 +2,8 @@ module Bizarro
   module FileHelpers
     extend self
 
-    def saved_path(filename)
-      "spec/screenshots/saved/#{filename}.png"
+    def reference_path(filename)
+      "spec/screenshots/reference/#{filename}.png"
     end
 
     def comparison_path(filename)

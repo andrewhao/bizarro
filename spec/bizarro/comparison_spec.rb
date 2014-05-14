@@ -17,15 +17,17 @@ describe Bizarro::Comparison do
   end
 
   describe '#run' do
+    let(:driver) do
+      driver = double('driver')
+      driver.stub(:save_screenshot)
+      driver
+    end
+
     subject { instance.run }
 
-    context 'given a reference screenshot' do
-      let(:driver) do
-        driver = double('driver')
-        driver.stub(:save_screenshot)
-        driver
-      end
+    before { instance.stub(:page).and_return(driver) }
 
+    context 'given a reference screenshot' do
       let(:differ) do
         differ = double('differ')
         differ.stub(:identical?).and_return(comparison_result)
@@ -33,8 +35,6 @@ describe Bizarro::Comparison do
       end
 
       before do
-        instance.stub(:page).and_return(driver)
-
         FileTest.should_receive(:exists?)
           .with(/#{safe_selector}/)
           .and_return(true)
@@ -48,7 +48,7 @@ describe Bizarro::Comparison do
         it 'requests a comparison screenshot' do
           subject
           expect(driver).to have_received(:save_screenshot).with(
-            /#{safe_selector}/,
+            /#{safe_selector}-live/,
             selector: selector
           )
         end
@@ -78,6 +78,20 @@ describe Bizarro::Comparison do
     end
 
     context 'without a reference screenshot' do
+      before do
+        FileTest.should_receive(:exists?)
+          .with(/#{safe_selector}/)
+          .and_return(false)
+      end
+
+      it 'creates a reference screenshot' do
+        subject
+
+        expect(driver).to have_received(:save_screenshot).with(
+          /#{safe_selector}.png/,
+          selector: selector
+        )
+      end
     end
   end
 

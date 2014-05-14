@@ -11,26 +11,33 @@ module Bizarro
     def run
       screenshot_filename = filename_safe(@selector)
 
-      if FileTest.exists?(saved_path(screenshot_filename))
+      if FileTest.exists?(reference_path(screenshot_filename))
         page.save_screenshot(
           comparison_path(screenshot_filename),
           selector: @selector
         )
 
-        differ = Bizarro::Differ.new(saved_path(screenshot_filename), comparison_path(screenshot_filename))
+        differ = Bizarro::Differ.new(reference_path(screenshot_filename), comparison_path(screenshot_filename))
+
         if differ.identical?
           File.delete(comparison_path(screenshot_filename))
           true
         else
           false
         end
+      else
+        page.save_screenshot(
+          reference_path(screenshot_filename),
+          selector: @selector
+        )
+        true
       end
     end
 
     def error_message
       <<-eos
         Failure when comparing #{@selector} to the reference screenshot located
-        at #{saved_path(@selector)}.
+        at #{reference_path(@selector)}.
 
         The tested screenshot can be found at #{comparison_path(@selector)}.
         A diff screenshot can be found at #{diff_path(@selector)}.
