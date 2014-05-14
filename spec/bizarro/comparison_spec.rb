@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Bizarro::Comparison do
-  let(:selector) { '#my-css-selector' }
+  let(:selector)      { '#my-css-selector' }
   let(:safe_selector) { 'my-css-selector' }
+  let(:driver)        { double('driver') }
 
-  let(:instance) { described_class.new(selector) }
+  let(:instance) { described_class.new(selector, driver) }
 
   before { File.stub(:delete) }
 
@@ -13,6 +14,10 @@ describe Bizarro::Comparison do
 
     it 'sets the selector' do
       expect(subject.selector).to eq selector
+    end
+
+    it 'sets the driver' do
+      expect(subject.driver).to eq driver
     end
   end
 
@@ -24,8 +29,6 @@ describe Bizarro::Comparison do
     end
 
     subject { instance.run }
-
-    before { instance.stub(:page).and_return(driver) }
 
     context 'given a reference screenshot' do
       let(:differ) do
