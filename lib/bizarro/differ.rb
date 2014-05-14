@@ -28,7 +28,8 @@ module Bizarro
     private
 
     def difference_allowed?(difference)
-      difference.length <= ALLOWED_DIFFERENCE
+      difference.length <= ALLOWED_DIFFERENCE &&
+        image_sizes_match
     end
 
     def create_difference
@@ -46,6 +47,11 @@ module Bizarro
           end
         end
       end
+    end
+
+    def image_sizes_match
+      @images[:reference].height == @images[:current].height &&
+        @images[:reference].width == @images[:current].width
     end
   end
 end

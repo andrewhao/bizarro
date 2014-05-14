@@ -54,5 +54,13 @@ describe Bizarro::Differ do
         expect(reference_image).to have_received(:save).with(/reference-diff.png/)
       end
     end
+
+    context 'when screenshots are different sizes' do
+      let(:current_image) { ChunkyPNG::Image.new(10,10, ChunkyPNG::Color.rgb(0,0,0)) }
+
+      it 'returns false' do
+        expect(subject).to be_false
+      end
+    end
   end
 end
